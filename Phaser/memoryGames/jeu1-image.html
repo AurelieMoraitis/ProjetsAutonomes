@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Jeu Phaser: mini jeu 1 -image avec objets</title>
+    <script src="../PhaserLib/phaser.min.js"> </script> <!--permet d'aller chercher dans un dossier au dessus -commentaire HTML-->
+</head>
+
+<body>
+    <script>
+        
+        var config =
+		//gère la configuration du jeu
+		{
+			type: Phaser.Auto,
+			width:800,
+			height: 600,
+			physics:
+			{
+				default: 'arcade',
+			},
+			scene:
+			{
+				preload: preload,
+				create: create
+			}
+		};
+        
+        var game = new Phaser.Game(config);
+        var objets, texte, luge, laine, texte2, texte3;
+        
+        function preload()
+		//precharge toutes les images
+        {
+            this.load.image ('objets', '/Assets/jeu1-image/objets2.jpg');
+            this.load.image ('luge', '/Assets/jeu1-image/luge.png');
+            this.load.image ('laine','/Assets/jeu1-image/laine.png');
+            this.load.image ('trompette','/Assets/jeu1-image/trompette.png');
+        }
+        
+        function create()
+        {
+            
+            texte=this.add.text (100,150, "Mémorise le plus d'objets possible.\nTu as 10 secondes", {fontFamily: 'Times new roman', fontSize:45});
+            
+            var timer_throwImage =this.time.addEvent(
+			/*lance l'image avec les objets après un delais de 1000 milisecondes -1 sec(quand la fontion est appellée)*/
+            {
+                delay:1500,
+                callback: throwImage,
+                callbackScope: this,
+                repeat:0
+            });
+            
+            
+            var timer_eraseImage =this.time.addEvent(
+			/*garde l'image affiche pendant 10 sec (quand la fontion est appellée)*/
+            { 
+                delay:10000,
+                callback: eraseImage,
+                callbackScope: this,
+                repeat:0
+            });
+            
+            
+            var timer_addText = this.time.addEvent(
+			/*efface l'image et fais appariatre la consigne les images clickables (reponses)(quand la fontion est appellée)*/
+            {
+                
+                delay: 11000,
+                callback: addText,
+                callbackScope: this,
+                repeat: 0
+            }); 
+        }
+        
+        function throwImage()
+        //rend la consigne invisible et affiche l'image
+		{
+            texte.setVisible(false);
+            objets = this.add.image(400,300, 'objets');
+        }
+        
+        function eraseImage()
+		{
+			this.tweens.add(
+			//efface doucement l'image
+            {
+                targets: [objets],
+                alpha: 0,
+                ease: 'Back',
+                duration:1000 //1000
+            });
+        }
+        
+        function addText()
+        {
+            //affiche la question et les images sur lesquelles il faut cliquer
+			texte2=this.add.text(100, 150, "Lequel de ces objets\nn'était pas présent sur l'image?", {fontFamily: 'Times new roman', fontSize:45});
+            
+            luge=this.add.image (200,400, 'luge').setInteractive();
+            laine=this.add.image (400, 400, 'laine').setInteractive();
+            trompette=this.add.image (600,400, 'trompette').setInteractive();
+            
+            var that = this;
+			
+            luge.on('pointerdown',function(pointer){
+				
+				/*
+				efface les mauvaises reponses et garde la bonne
+				passe au jeu suivant après  2 sec
+				*/
+				texte2.setVisible(false);
+                laine.setVisible(false);
+                trompette.setVisible(false);
+                texte3=that.add.text(300,150, "Bonne réponse", {fontFamily: 'Times new roman', fontSize:45});
+                
+                setTimeout(
+                    "window.location.href = 'intro-jeu2.html';", 
+                    2000);
+            });
+            
+            trompette.on('pointerdown',function(pointer){
+                texte2.setVisible(false);
+                texte3=that.add.text(150,150, "Mausaise réponse! Recommence ", {fontFamily:'times new roman', fontSize:45});
+                
+                setTimeout(function()
+                {
+                    location.reload();
+					texte3.setVisible(false);
+                }, 2000);
+                
+            });
+            
+            laine.on('pointerdown',function(pointer){
+                /*si on appuie sur mauvaise reponse (ici luge)la question s'efface et un autre texte apparait*/
+				texte2.setVisible(false);
+                texte3=that.add.text(150,150, "Mausaise réponse! Recommence ", {fontFamily:'times new roman', fontSize:45});
+                
+                setTimeout(function()
+                //relance la page après 5 sec
+				{
+					location.reload();
+					texte3.setVisible(false);
+                }, 2000);
+            });
+            
+        }
+        
+        
+    </script>
+</body>
+</html>

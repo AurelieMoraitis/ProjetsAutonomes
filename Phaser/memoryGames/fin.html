@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Jeu Phaser: écran de fin</title>
+    <script src="../PhaserLib/phaser.min.js"> </script> 
+</head>
+
+<body>
+    <script>
+        
+        var config =
+            {
+                type: Phaser.Auto,
+                width:800,
+                height: 600,
+                physics:
+                {
+                    default: 'arcade'},
+                scene:
+                {
+                    preload: preload,
+                    create: create
+                }
+            };
+        
+        var game = new Phaser.Game(config);
+		var background, texte;
+		
+		function preload()
+		{
+			this.load.image ('background','/Assets/sky.png');
+		}
+		
+		function create ()
+		{
+			background=this.add.image (400,300, 'background');
+			
+			texte = this.add.text(100, 200, "Félicitations,\nta mémoire s'améliore de jour en jour\n :-)", {fontFamily: 'Times new roman', fontSize:45, color:'#000000'});
+			
+			setTimeout(
+				"window.location.href = 'credits.html';",
+				8000);
+		}
+        
+    </script>
+</body>
+</html>

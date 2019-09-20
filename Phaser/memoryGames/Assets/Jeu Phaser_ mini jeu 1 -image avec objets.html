@@ -1,0 +1,125 @@
+
+<!-- saved from url=(0037)http://localhost:8080/jeu1-image.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Jeu Phaser: mini jeu 1 -image avec objets</title>
+    <script src="./Jeu Phaser_ mini jeu 1 -image avec objets_files/phaser.min.js.téléchargement"> </script> <!--permet d'aller chercher dans un dossier au dessus -commentaire HTML-->
+</head>
+
+<body>
+    <script>
+        
+        var config =
+            {
+                type: Phaser.Auto,
+                width:800,
+                height: 600,
+                physics:
+                {
+                    default: 'arcade'},
+                scene:
+                {
+                    preload: preload,
+                    create: create,
+                    update: update
+                }
+            };
+        
+        var game = new Phaser.Game(config);
+        var objets, texte, parapluie, bouteille, texte2;
+        
+        function preload()
+        {
+            this.load.image ('objets', '/Assets/objets.jpg');
+            this.load.image ('parapluie', '/Assets/parapluie.jpeg');
+            this.load.image ('bouteille','/Assets/bouteille.jpg');
+            this.load.image ('telephone','/Assets/telephone.jpg');
+        }
+        
+        function create()
+        {
+            
+            
+            texte=this.add.text (180,150, "Mémorise le plus d'objets possible", {fontFamily: 'Times new roman', fontSize:30});
+            
+            
+            
+            var timer_throwImage =this.time.addEvent(
+            {
+                delay:1000,
+                callback: throwImage,
+                callbackScope: this,
+                repeat:0
+            });
+            
+            var timer_eraseImage =this.time.addEvent(
+            {
+                delay:10000,
+                callback: eraseImage,
+                callbackScope: this,
+                repeat:0
+            });
+            
+            
+            var timer_addText = this.time.addEvent (
+            {
+                delay: 13000, // en millisecondes
+                callback: addText,
+                callbackScope: this,
+                repeat: 0
+            }); 
+        }
+        
+        function update()
+        {
+         
+        }
+        
+        function throwImage()
+        {
+            texte.setVisible(false);
+            objets = this.physics.add.image(400,300, 'objets');
+        }
+        
+        function eraseImage()
+        {
+            this.tweens.add(
+            {
+                targets: [objets],
+                alpha: 0,
+                ease: 'Back',
+                duration:10000
+            });
+        }
+        
+        function addText()
+        {
+            texte2=this.add.text(100, 150, "Lequel de ces objets n'était pas présent sur l'image?", {fontFamily: 'Times new roman', fontSize:30});
+            
+            parapluie=this.add.image (200,400, 'parapluie').setInteractive();
+            bouteille=this.add.image (400, 400, 'bouteille').setInteractive();
+            telephone=this.add.image (600,400, 'telephone').setInteractive();
+            
+            parapluie.on('pointerdown',function(pointer){
+                alert ('Mauvaise réponse!');
+            });
+            
+            telephone.on('pointerdown',function(pointer){
+                alert ('Mauvaise réponse!');
+            });
+            
+            bouteille.on('pointerdown',function(pointer){
+                //alert ('Bonne réponse');
+                texte2.setVisible(false);
+                parapluie.setVisible(false);
+                telephone.setVisible(false);
+                //texte3=this.add.text(100,150, "Bonne réponse", {fontFamily: 'Times new roman', fontSize:30});
+                var texte3 = this.add.text(300,150, "B", {fontFamily:'Times new roman', fontSize:30});
+            });
+            
+            
+        }
+        
+    </script>
+
+<canvas width="800" height="600"></canvas></body></html>

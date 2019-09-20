@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Jeu Phaser: mini jeu 2-platfomer</title>
+    <script src="../PhaserLib/phaser.min.js"> </script> <!--permet d'aller chercher dans un dossier au dessus -commentaire HTML-->
+</head>
+
+<body>
+    <script>
+        //alert ()=commande JavaScript pratique pour débeuguer -commentaire JS
+        
+        var config =
+            {
+                type: Phaser.AUTO,
+                width: 800,
+                height: 600,
+                physics: 
+                {
+                    default: 'arcade',
+                    arcade:{
+                        gravity:{y:300}
+                    }
+                },
+                scene:
+                {
+                    preload: preload,
+                    create:create,
+                    update: update
+                }
+            };
+        
+        var game = new Phaser.Game(config);
+        var plateformes, joueur, cursors;
+        var blanc1, blanc2, blanc3,
+            bleu1, bleu2, bleu3,
+            vert1, vert2, vert3,
+            orange1, orange2, orange3;
+            //rouge, carres
+        
+        var couleurCouranteCarre1 ='blanc';
+        var couleurCouranteCarre2 ='blanc';
+        var couleurCouranteCarre3 ='blanc';
+        var texte, texte2, texte3;
+		
+		//canMove empeche le joueur de bouger si sa valeur est false
+		var canMove=false;
+        
+        
+        function preload ()
+        {
+            this.load.image ('background','/Assets/jeu2-plateforme/background.JPG');
+            this.load.image ('plateforme', '/Assets/jeu2-plateforme/platform.png');
+            this.load.image ('petitePlateforme', '/Assets/jeu2-plateforme/platform3.png'),
+            this.load.image ('carreBleu','/Assets/jeu2-plateforme/carreBleu.png');
+            this.load.image ('carreBlanc','/Assets/jeu2-plateforme/carreBlanc.png');
+            this.load.image ('carreRouge','/Assets/jeu2-plateforme/carreRouge.png');
+            this.load.image ('carreVert', '/Assets/jeu2-plateforme/carreVert.png');
+            this.load.image ('carreOrange', '/Assets/jeu2-plateforme/carreOrange.png');
+            this.load.spritesheet ('joueur','/Assets/jeu2-plateforme/perso.png',{ frameWidth: 32, frameHeight: 48 });
+        }
+        
+        function create ()
+        {
+            this.add.image (400,258, 'background');
+            
+            texte=this.add.text(100, 150, "Mémorise la séquence suivante", {fontFamily: 'Times new roman', fontSize:45, color:'#000000'});
+            
+            var timer = this.time.addEvent({
+                //après 10 milisecondes le prmier carre apparait 
+				delay:10,
+                callback: addFirstCube,
+                callbackScope: this,
+                repeat: 0
+            });
+            
+            plateformes = this.physics.add.staticGroup();
+            
+            plateformes.create(400, 568, 'plateforme').setScale(4).refreshBody();//sol
+            plateformes.create(600, 400, 'plateforme'); //plateforme en bas a droite
+            plateformes.create(50, 250, 'plateforme'); //plateforme a gauche
+            plateformes.create(750, 220, 'plateforme'); //plateforme en huat a droite
+            plateformes.create (400,130, 'petitePlateforme'); //petite plateforme du haut
+            plateformes.create (350,300, 'petitePlateforme'); //petite plateforme du bas
+            
+            
+            //ajoute le perso au jeu
+            joueur = this.physics.add.sprite(100, 480, 'joueur');
+			
+			//permet d'utiliser le clavier (pour bouger le perso)
+			cursors = this.input.keyboard.createCursorKeys();
+            
+			//force de rebond du joueur
+            joueur.setBounce(0.1);
+			
+			//collision avec les bords du jeu
+            joueur.setCollideWorldBounds(true);
+            
+            this.anims.create({
+                //joue l'animation voulue lorsque la cle est utilisée
+				//ici joue l'animation vers la gauche
+				key: 'left',
+                frames: this.anims.generateFrameNumbers('joueur', { start: 0, end: 3 }),
+                frameRate: 10,
+                repeat: -1
+            });  
+            
+            this.anims.create({
+				//joue l'animation immobile
+                key: 'turn',
+                frames: [ { key: 'joueur', frame: 4 } ],
+                frameRate: 20
+            }); 
+            
+            this.anims.create({
+				//joue l'animation vers la droite
+                key: 'right',
+                frames: this.anims.generateFrameNumbers('joueur', { start: 5, end: 8 }),
+                frameRate: 10,
+                repeat: -1
+            });
+            
+            //ajoute un collider entre le joueur et les plateformes
+			this.physics.add.collider(joueur, plateformes);
+        }
+        
+        
+        function update ()
+        {
+            //si canMove est false, le joueur ne peut pas bouger
+			if(canMove)
+			{
+			
+				if (cursors.left.isDown) 
+				{
+					 joueur.setVelocityX(-130);
+					 joueur.anims.play('left', true);
+				}
+				
+				else if (cursors.right.isDown)
+				{
+					joueur.setVelocityX(130);
+					joueur.anims.play('right', true);
+				}
+				else
+				{
+					joueur.setVelocityX(0);
+					joueur.anims.play('turn');
+				}
+				
+				if(cursors.up.isDown && joueur.body.touching.down)
+				{
+					joueur.setVelocityY(-300);
+				}
+			}
+        }
+        
+        function addFirstCube()
+        //fait apparaitre le premier carre, et appelle le deuxième
+		{
+            
+            bleu1 = this.add.image (700,300,'carreBleu');
+            
+            
+            var timer_addSecondCube = this.time.addEvent({
+                delay: 3000,
+                callback: addSecondCube,
+                callbackScope: this,
+                repeat: 0
+            });
+        }
+        
+        function addSecondCube()
+        //remplace le carre precedant par un carre blanc et cree un autre carre (a un autre emplacement)
+		{
+            texte.setVisible(false);
+            bleu1.setVisible(false);
+            orange1 = this.add.image (100,100,'carreOrange');
+            
+            blanc1 = this.physics.add.image (700,300, 'carreBlanc');
+            blanc1.body.allowGravity = false; //enlève la gravité
+            blanc1.body.immovable=true; //garde l'objet totalement immobile
+            
+            //ajoute un collider entre le joueur un carré
+			this.physics.add.collider(joueur, blanc1, collisionJoueurCarre1, null, this);
+            
+            var timer_addThirdCube = this.time.addEvent ({
+                delay: 3000,
+                callback: addThirdCube,
+                callbackScope: this,
+                repeat: 0
+            });
+        }
+        
+        function addThirdCube()
+        {
+		//remplace le carre precedant par un carre blanc et cree un autre carre (a un autre emplacement)
+            orange1.setVisible(false);
+            vert1 = this.add.image (750,50,'carreVert');
+            blanc2 = this.physics.add.image (100,100,'carreBlanc');
+            blanc2.body.allowGravity = false;
+            blanc2.body.immovable=true;
+            
+            this.physics.add.collider(joueur, blanc2, collisionJoueurCarre2, null, this);
+            
+            var timer_addFourthCube = this.time.addEvent ({
+                delay: 3000,
+                callback: addFourthCube,
+                callbackScope: this,
+                repeat: 0
+            });
+            
+        }
+        
+        function addFourthCube()
+        {
+		//remplace le carre precedant par un carre blanc et cree un autre carre (a un autre emplacement)
+            vert1.setVisible(false);
+            blanc3 = this.physics.add.image (750,50,'carreBlanc');
+            
+            blanc3.body.allowGravity = false; //enlève la gravité du cube
+            blanc3.body.immovable=true; // permet au cube de rester immobile
+            
+            this.physics.add.collider(joueur, blanc3, collisionJoueurCarre3, null, this);
+            
+            texte2=this.add.text(200, 150, "Reproduis la séquence", {fontFamily: 'Times new roman', fontSize:45, color:'#000000'});
+			
+			/*passer canMove a true permet au perso de se deplacer se fait quand tous les carrés sont apparus une fois*/
+			canMove=true;
+        }
+        
+        function collisionJoueurCarre1 (joueur, blanc1)
+        //s'il y a collision entre le joueur et le premier carre blanc, la couleur du carre change (boucle: blanc>orange>bleu>vert>blanc...)
+		{ 
+            texte2.setVisible(false);
+            
+            if (couleurCouranteCarre1 == 'blanc')
+            {
+                couleurCouranteCarre1 = 'orange';
+                blanc1.setVisible(false);
+                orange3 = this.add.image (700,300,'carreOrange');
+            }
+            
+            else if (couleurCouranteCarre1 == 'orange')
+            {
+                couleurCouranteCarre1 = 'bleu';
+                orange3.setVisible(false);
+                bleu1.setVisible(true);
+            }
+            
+            else if (couleurCouranteCarre1 == 'bleu')
+            {
+                couleurCouranteCarre1 = 'vert';
+                bleu1.setVisible(false);
+                vert2 = this.add.image (700,300, 'carreVert')
+            }
+            
+            else if (couleurCouranteCarre1 == 'vert')
+            {
+                couleurCouranteCarre1 ='blanc';
+                vert2.setVisible(false);
+                blanc1.setVisible(true);
+            }
+
+        }
+        
+        function collisionJoueurCarre2 (joueur, bleu)
+        //s'il y a collision entre le joueur et le deuxième carre blanc, la couleur du carre change (boucle: blanc>bleu>vert>orange>blanc...)
+		{
+            
+            texte2.setVisible(false);
+            
+            if (couleurCouranteCarre2 == 'blanc')
+            {
+                couleurCouranteCarre2 = 'bleu';
+                blanc2.setVisible(false);
+                bleu2 = this.add.image (100,100,'carreBleu');
+                //this.physics.add.collider (joueur, bleu2, collisionJoueurCarre2, null, this);
+            }
+            
+            else if (couleurCouranteCarre2 == 'bleu')
+            {
+                couleurCouranteCarre2 = 'vert';
+                bleu2.setVisible(false);
+                vert3 = this.add.image (100,100, 'carreVert');
+            }
+            
+            else if (couleurCouranteCarre2 == 'vert')
+            {
+                couleurCouranteCarre2 ='orange';
+                vert3.setVisible(false);
+                orange1.setVisible(true);
+            }
+            
+            else if (couleurCouranteCarre2 == 'orange')
+            {
+                couleurCouranteCarre2 = 'blanc';
+                orange1.setVisible(false);
+                blanc2.setVisible(true);
+            }
+        }
+        
+        function collisionJoueurCarre3 (joueur, orange)
+        //s'il y a collision entre le joueur et le troisième carre blanc, la couleur du carre change (boucle: blanc>vert>bleu>orange>blanc...)
+		{
+            
+            texte2.setVisible(false);
+            
+            if (couleurCouranteCarre3 == 'blanc')
+            {
+                couleurCouranteCarre3 = 'vert';
+                blanc3.setVisible(false);
+                vert1.setVisible(true);
+            }
+            
+            else if (couleurCouranteCarre3 == 'vert')
+           {
+               couleurCouranteCarre3 ='bleu';
+               vert1.setVisible(false);
+               bleu3= this.add.image (750,50,'carreBleu');
+           }
+            
+            else if (couleurCouranteCarre3 == 'bleu')
+            {
+                couleurCouranteCarre3 = 'orange';
+                bleu3.setVisible(false);
+                orange2 = this.add.image (750,50,'carreOrange');
+                
+            }
+            
+            else if (couleurCouranteCarre3 == 'orange')
+            {
+                couleurCouranteCarre3 = 'blanc';
+                orange2.setVisible(false);
+                blanc3.setVisible(true);
+                
+            }
+            
+            
+            //si la couleur de chaque carre correspond à la couleur montrée au debut du jeu, on gagne et passe au jeu 3
+			if (couleurCouranteCarre1 == 'bleu' && couleurCouranteCarre2 == 'orange' && couleurCouranteCarre3 == 'vert')
+            {
+                texte=this.add.text(50, 150, "Bravo, tu as reproduis la bonne séquence", {fontFamily: 'Times new roman', fontSize:45, color:'#000000'});
+				canMove=false;
+				setTimeout(function()
+				{
+					window.location.href = 'intro-jeu3.html';
+					texte.setVisible(false);
+				},2000);
+            }
+			
+			else
+			{
+				//si la couleur des carrés ne correspond pas à celle du début, la page se recharge
+				texte.setVisible(false);
+				texte3= this.add.text (100,150, "Mauvaise séquence! Recommence", {fontFamily:'times new roman', fontSize:45, color:'#000000'});
+				canMove=false;
+				setTimeout(function()
+				{
+					location.reload();
+					texte3.setVisible(false);
+				},2000);
+			}
+            
+        }
+		
+    </script>
+   
+</body>
+</html>

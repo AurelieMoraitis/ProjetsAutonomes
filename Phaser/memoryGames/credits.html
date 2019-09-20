@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+	<title>Test Phaser</title>
+    <script src="/PhaserLib/phaser.min.js"> </script> <!--permet d'aller chercher dans un dossier au dessus -commentaire HTML-->
+</head>
+
+<body>
+    <script>
+        //alert ()=commande JavaScript pratique pour dĂ©beuguer -commentaire JS
+        
+        var config =
+            {
+                type: Phaser.AUTO,
+                width: 800,
+                height: 600,
+                physics: 
+                {
+                default: 'arcade'},
+                scene:
+                {
+					create:create
+                }
+            };
+        
+        var game =new Phaser.Game(config);
+		
+        
+        function create ()
+        {
+            var texte1=this.add.text(300, 150, "Crédits:", {fontFamily: 'Times new roman', fontSize:60,fontStyle:'bold'});
+			
+			var texte2=this.add.text(20,300, 'Jeu2: ', {fontFamily: 'Times new roman',fontSize:20});
+			
+			var texte3=this.add.text(20,320, '"Making your first Phaser 3 game"', {fontFamily: 'Times new roman',fontSize:20,fontStyle:'italic'});
+			
+			var texte4=this.add.text(20,360, 'Jeu3: ', {fontFamily: 'Times new roman',fontSize:20});
+			
+			var texte5=this.add.text(20,380, '"Mémoire - Jeu de la commande"', {fontFamily: 'Times new roman',fontSize:20, fontStyle:'italic'});
+			
+			var texte6=this.add.text(20,420, 'Code: ', {fontFamily: 'Times new roman',fontSize:20, fontStyle:'italic'});
+			
+			var texte7=this.add.text(20,440, 'Aurélie Moraïtis', {fontFamily: 'Times new roman',fontSize:20, fontStyle:'italic'});
+			
+        }
+        
+    </script>
+   
+</body></html>

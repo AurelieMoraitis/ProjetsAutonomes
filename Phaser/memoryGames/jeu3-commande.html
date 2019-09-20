@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Jeu Phaser: mini jeu 3-la commande</title>
+        <script src ='../PhaserLib/phaser.min.js'></script>
+        
+    </head>
+
+
+    <body>
+        <script type ="text/javascript"> 
+            var config ={
+                type: Phaser.AUTO,
+                width: 800,
+                height: 600,
+                physics: {
+                    default: 'arcade'
+                },
+                scene: {
+                    preload: preload,
+                    create: create
+                }
+            };
+            
+            var game = new Phaser.Game(config);
+            var texte, texte2, texe3,texte4, texte5,texte6,
+                burger, churros, pizza,
+                churros2, pizza2, burger2;
+            
+            
+            function preload ()
+            {
+                this.load.image('carottes','/Assets/jeu3-commande/carottes.JPG');
+                this.load.image('burger','/Assets/jeu3-commande/burger-frites.JPG');
+                this.load.image('pizza','/Assets/jeu3-commande/pizza.JPG');
+                this.load.image('pates','/Assets/jeu3-commande/pates.JPG');
+                this.load.image('churros','/Assets/jeu3-commande/churros.JPG');
+                this.load.image('pancakes','/Assets/jeu3-commande/pancakes.JPG');
+                
+                this.load.image('burger2','/Assets/jeu3-commande/burger-frites2.JPG');
+                this.load.image('churros2','/Assets/jeu3-commande/churros2.JPG');
+                this.load.image('pizza2','/Assets/jeu3-commande/pizza2.JPG');
+            };
+            
+            function create ()
+            {
+                texte=this.add.text(100,150, 'Mémorise les commandes suivantes', {fontFamily: 'Times new roman', fontSize:45});
+				
+                var timer = this.time.addEvent({
+                delay: 1500,
+                callback: commande1,
+                callbackScope: this,
+                repeat: 0
+                });
+                
+            };
+            
+            
+            function commande1()
+            {
+                texte.setVisible(false);
+				texte2 = this.add.text(250,100,'Commande n°1:',{fontFamily: 'times new roman',  fontSize: 45});
+                burger=this.add.image (400,300,'burger');
+                
+                var timer_commande2 = this.time.addEvent(
+                {
+                    delay:5000,
+                    callback: commande2,
+                    callbackScope: this,
+                    repeat: 0
+                });
+                
+            };
+            
+            function commande2()
+            {
+                texte2.setVisible(false);
+                burger.setVisible (false);
+                
+                texte3 = this.add.text (250,100, 'Commande n°2:',{fontFamily:'times new roman', fontSize:45});
+                churros = this.add.image (400,300,'churros');
+                
+                var timer_commande3 = this.time.addEvent(
+                {
+                    delay:5000,
+                    callback: commande3,
+                    callbackScope: this,
+                    repeat: 0
+                });
+                
+            };
+            
+            function commande3()
+            {
+                texte3.setVisible(false);
+                churros.setVisible (false);
+                
+                texte4 = this.add.text (250,100, 'Commande n°3:',{fontFamily:'times new roman', fontSize:45});
+                pizza = this.add.image (400,300,'pizza');
+                
+                var timer_changeText = this.time.addEvent(
+                {
+                    delay:5000,
+                    callback: changeText,
+                    callbackScope: this,
+                    repeat: 0
+                });
+                
+            }
+            
+            function changeText()
+            {
+                
+                var that =this;
+                
+                texte4.setVisible(false);
+                pizza.setVisible (false);
+                
+                texte5 = this.add.text (150,100, 'Quelle était la commande n°1 ?', {fontFamily:'times new roman', fontSize:45});
+                churros2 = this.add.image (200,300,'churros2').setInteractive();
+                pizza2 = this.add.image (400,300,'pizza2').setInteractive();
+                burger2 = this.add.image (600,300, 'burger2').setInteractive();
+                
+                burger2.on('pointerdown',function(pointer){
+                   
+                    texte5.setVisible(false);
+                    churros2.setVisible(false);
+                    pizza2.setVisible(false);
+                    
+                    texte6=that.add.text(250,150, "Bonne réponse", {fontFamily: 'Times new roman', fontSize:45});
+					
+					setTimeout(
+                    "window.location.href = 'fin.html';", 
+                    2000);
+                });
+                
+                churros2.on('pointerdown',function(pointer){
+                    texte5.setVisible(false);
+                    texte6= that.add.text(150,150, 'Mauvaise réponse! Recommence ', {fontFamily:'times new roman', fontSize:45});
+					
+					setTimeout(function()
+					//relance la page après 2 sec
+					{
+						location.reload();
+						texte.setVisible(true);
+					}, 2000);
+                });
+                
+                pizza2.on('pointerdown',function(pointer){
+                    texte5.setVisible(false);
+                    texte6= that.add.text(150,150, 'Mauvaise réponse! Recommence ', {fontFamily:'times new roman', fontSize:45});
+					
+					setTimeout(function()
+					{
+						location.reload();
+						texte.setVisible(true);
+					}, 2000);
+                });
+            }
+             
+            
+        </script>
+
+    </body>
+
+</html>
